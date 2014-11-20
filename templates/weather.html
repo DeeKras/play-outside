@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h3>
+	Weather for <font color = "red">{{place}} </font>for school hours on <font color = "red">{{display_date}}</font>:
+</h3>
+
+	<table width = 100% align = 'left'  border = "1">
+		<tr bgcolor="#00FF00">
+			<th>time</th>
+			<th>temperature</th>
+			<th>windspeed</th>
+			<th>windchill</th>
+			<th>precip</th>
+			<th>precip probability</th>
+			<th>precip intensity</th>
+			<th>playability</th>
+		</tr>
+		{% for hour in hourly %}
+	        <tr style="outline: thin solid red" >
+	        		
+
+				<td>{{hour.hour}}</td>
+				<td>{{hour.temperature}}</td>
+				<td>{{hour.windspeed}}</td>
+				<td>{{hour.windchill}}</td>
+				<td>{{hour.precipType}}</td>
+				<td>{{hour.precipProbability}}</td>
+				<td>{{hour.precipIntensity}}</td>
+	        	{%if hour.playability == 'red'%}
+	        		<td bgcolor = 'red'>
+	        	{%elif hour.playability == 'yellow'%}
+	        		<td bgcolor = 'yellow'>
+	        	{%elif hour.playability == 'green'%}
+	        		<td bgcolor = 'green'>
+	        	{%endif%}
+					{{hour.playability}}</td>
+			</tr>
+	    {% endfor %}
+   	</table>
+{% block content %}
