@@ -1,8 +1,12 @@
-{% extends "base.html" %}
+{% extends "firstpage.html" %}
 {% block content %}
 
 <h3>
-	Weather for <font color = "red">{{place}} </font>for school hours on <font color = "red">{{display_date}}</font>:
+	<form  action = 'search'>
+		Weather for <font color = "red">{{place}} </font>for school hours on 
+		<font color = "red">{{display_date}}</font>: 
+		<input type = 'submit' name = 'change' value = 'Change location!'>
+	</form>
 </h3>
 
 	<table width = 100% align = 'left'  border = "1">
@@ -38,4 +42,4 @@
 			</tr>
 	    {% endfor %}
    	</table>
-{% block content %}
+{% endblock content %}

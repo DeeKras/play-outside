@@ -1,7 +1,9 @@
-<form action = 'search'>
+<form  action = 'search'>
 <h4>
-	We detect that you are in {{place}}. 
-	<input type = 'submit' name = 'change'>
+	{%if flag == '0'%}
+		We detect that you are in {{place}}. 
+		<input type = 'submit' name = 'change' value = 'Change!'>
+	{%endif%}
 </h4>
 </form>
 {% block content %}{% endblock %}
