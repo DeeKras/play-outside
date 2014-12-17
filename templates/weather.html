@@ -1,45 +1,51 @@
 {% extends "firstpage.html" %}
 {% block content %}
-
-<h3>
-	<form  action = '/search'>
-		Weather for <font color = "red">{{place}} </font>for school hours on 
-		<font color = "red">{{display_date}}</font>: 
-		<input type = 'submit' name = 'change' value = 'Change location!'>
-	</form>
-</h3>
-
-	<table width = 100% align = 'left'  border = "1">
-		<tr bgcolor="#00FF00">
-			<th>time</th>
-			<th>temperature</th>
-			<th>windspeed</th>
-			<th>windchill</th>
-			<th>precip</th>
-			<th>precip probability</th>
-			<th>precip intensity</th>
-			<th>playability</th>
-		</tr>
-		{% for hour in hourly %}
-	        <tr style="outline: thin solid red" >
-	        		
-
-				<td>{{hour.hour}}</td>
-				<td>{{hour.temperature}}</td>
-				<td>{{hour.windspeed}}</td>
-				<td>{{hour.windchill}}</td>
-				<td>{{hour.precipType}}</td>
-				<td>{{hour.precipProbability}}</td>
-				<td>{{hour.precipIntensity}}</td>
-	        	{%if hour.playability == 'red'%}
-	        		<td bgcolor = 'red'>
-	        	{%elif hour.playability == 'yellow'%}
-	        		<td bgcolor = 'yellow'>
-	        	{%elif hour.playability == 'green'%}
-	        		<td bgcolor = 'green'>
-	        	{%endif%}
-					{{hour.playability}}</td>
+<head>
+	<h3>
+		<form  action="/search" method="post">
+			Weather for <font color = "red">{{place}} </font>for school hours on 
+			<font color = "red">{{display_date}}</font>: 
+			<input type = 'submit' name = 'change' value = 'Change location!'>
+		</form>
+	</h3>
+</head>
+<body>
+	<div>
+		<table width = 100% align = 'left'  border = "1">
+			<tr bgcolor="#00FF00">
+				<th>time</th>
+				<th>temperature</th>
+				<th>windspeed</th>
+				<th>windchill</th>
+				<th>precip</th>
+				<th>precip probability</th>
+				<th>precip intensity</th>
+				<th>playability</th>
 			</tr>
-	    {% endfor %}
-   	</table>
+			{% for hour in hourly %}
+		        <tr style="outline: thin solid red" >
+		        		
+
+					<td>{{hour.hour}}</td>
+					<td>{{hour.temperature}}</td>
+					<td>{{hour.windspeed}}</td>
+					<td>{{hour.windchill}}</td>
+					<td>{{hour.precipType}}</td>
+					<td>{{hour.precipProbability}}</td>
+					<td>{{hour.precipIntensity}}</td>
+		        	{%if hour.playability == 'red'%}
+		        		<td bgcolor = 'red'>
+		        	{%elif hour.playability == 'yellow'%}
+		        		<td bgcolor = 'yellow'>
+		        	{%elif hour.playability == 'green'%}
+		        		<td bgcolor = 'green'>
+		        	{%endif%}
+						{{hour.playability}}</td>
+				</tr>
+		    {% endfor %}
+	   	</table>
+	</div>
+
+</body>
+	
 {% endblock content %}

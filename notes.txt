@@ -1,0 +1,34 @@
+# lat = 42.8964
+# lng = -78.8852
+
+# # # # #calgary
+# # lat = 51.0500
+# # lng = -114.0667
+
+
+# # lat = 40.6  # need to get the lat/ lng from user - either IP or zip or city/country
+# # lng = -73.9
+# date = '2014-11-21T12:00:00-0400' # need to get today's date and format in this way
+
+# weather_for_city = SchoolWeather(lat, lng, date)
+
+# # print weather_for_city.hourly
+
+
+
+------------
+import requests
+
+def find_lnglat_by_place():
+    # state = request.form[state]
+    # city = request.form[postal]
+
+    state = 'FL'
+    city = 'Miami'
+    api = "http://api.zippopotam.us/us/{}/{}".format(state, city)
+    json_response = requests.get(api).json()
+    lng = json_response['places'][0]['longitude']
+    lat = json_response['places'][0]['latitude']
+
+    return lat, lng
+print find_lnglat_by_place()

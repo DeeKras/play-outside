@@ -1,6 +1,8 @@
 import requests
 import time
 import math
+from views import db
+from datetime import datetime
 
 forecast_io_key = 'fc0baa44318f233c63d149ae0fea7c85'
 api_forecast_io = 'https://api.forecast.io/forecast/{}/{},{},{}'
@@ -9,13 +11,42 @@ api_forecast_io = 'https://api.forecast.io/forecast/{}/{},{},{}'
 api_googlemaps = 'http://maps.googleapis.com/maps/api/geocode/json?latlng={},{}&sensor=true'
 
 
+class Search(db.Model):
+    timestamp = db.Column(db.Datetime, primary_key=True)
+    search_by = db.Column(db.String)
+    postal = db.Column(db.String)
+    country = db.Column(db.String)
+    state = db.Column(db.String)
+    city = db.Column(db.String)
+    code = db.Column(db.String)
+
+    def __init__(self, timestamp, search_by, postal, country, state, city, code):
+        self.timestamp = timestamp
+        self.search_by = search_by
+        self.postal = postal
+        self.country = country
+        self.state = state
+        self.city = city
+        self.code = code
+
+    def __repr__(self):
+        if self.search_by == "postal":
+            searched = self.postal
+        elif self.search_by == "place":
+            searched = "{}: {}, {}".format(self.country, self.state, self.city)
+        elif self.search_by == "code":
+            searched = self.code
+        else:
+            searched = 'by IP'
+
+        return 'Searched for : {}'.format(searched)
 
 class SchoolWeather(object):
-    def __init__(self, lat, lng, date):
+    def __init__(self, lat, lng):
 
         self.lat = lat
         self.lng = lng
-        self.date = date
+        self.date = '{}T12:00:00-0400'.format(datetime.date.today())
         self.neighborhood = ""
         self.city = ""
         self.state = ""
@@ -148,18 +179,3 @@ def convert_to_celsius(tempF):
 
 
 
-# lat = 42.8964
-# lng = -78.8852
-
-# # # # #calgary
-# # lat = 51.0500
-# # lng = -114.0667
-
-
-# # lat = 40.6  # need to get the lat/ lng from user - either IP or zip or city/country
-# # lng = -73.9
-# date = '2014-11-21T12:00:00-0400' # need to get today's date and format in this way
-
-# weather_for_city = SchoolWeather(lat, lng, date)
-
-# # print weather_for_city.hourly
