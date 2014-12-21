@@ -2,11 +2,8 @@
 {% block content %}
 <head>
 	<h3>
-		<form  action="/search" method="post">
-			Weather for <font color = "red">{{place}} </font>for school hours on 
-			<font color = "red">{{display_date}}</font>: 
-			<input type = 'submit' name = 'change' value = 'Change location!'>
-		</form>
+		Weather for <font color = "red">{{place}} </font>for school hours on 
+		<font color = "red">{{display_date}}</font>: 
 	</h3>
 </head>
 <body>
@@ -45,7 +42,10 @@
 		    {% endfor %}
 	   	</table>
 	</div>
-
 </body>
+<br><br>
+<form action="/school_info", method="GET">
+	<input type = "submit" value="Register my school">
+</form>
 	
 {% endblock content %}

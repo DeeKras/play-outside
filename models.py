@@ -1,18 +1,22 @@
+from os import urandom
+from random import randrange
 import requests
 import time
 import math
-from views import db
-from datetime import datetime
+import datetime
+
+from functions import find_by_postal
+from config import db
 
 forecast_io_key = 'fc0baa44318f233c63d149ae0fea7c85'
 api_forecast_io = 'https://api.forecast.io/forecast/{}/{},{},{}'
-
-# api_geonames = 'http://api.geonames.org/timezoneJSON?lat={}&lng={}&username={}'
 api_googlemaps = 'http://maps.googleapis.com/maps/api/geocode/json?latlng={},{}&sensor=true'
 
 
+
+
 class Search(db.Model):
-    timestamp = db.Column(db.Datetime, primary_key=True)
+    timestamp = db.Column(db.DateTime, primary_key=True)
     search_by = db.Column(db.String)
     postal = db.Column(db.String)
     country = db.Column(db.String)
@@ -41,9 +45,41 @@ class Search(db.Model):
 
         return 'Searched for : {}'.format(searched)
 
+class SchoolData(db.Model):
+    CECE_code = db.Column(db.String, primary_key=True)
+    email = db.Column(db.String, nullable=False)
+    school_name = db.Column(db.String, nullable=False)
+    first_name = db.Column(db.String, nullable=False)
+    last_name = db.Column(db.String, nullable=False)
+    city = db.Column(db.String, nullable=False)
+    state = db.Column(db.String, nullable=False)
+    postal = db.Column(db.String, nullable=False)
+    country = db.Column(db.String, nullable=False)
+    longitude = db.Column(db.String) 
+    latitude = db.Column(db.String) 
+    cellphone = db.Column(db.String, nullable=False)
+    send_email = db.Column(db.Boolean, default=True)
+    send_text = db.Column(db.Boolean, default=True)
+
+    def __init__(self, email, school_name, first_name, last_name, 
+                    city, state, postal, country, cellphone, send_email, send_text):
+        self.CECE_code = str("Z{}".format(randrange(99999,9999999)))
+        self.email = email
+        self.school_name = school_name
+        self.first_name = first_name
+        self.last_name = last_name
+        self.city = city
+        self.state = state
+        self.postal = postal
+        self.country = country
+        self.longitude = find_by_postal(postal)[1]
+        self.latitude = find_by_postal(postal)[0]
+        self.cellphone = cellphone
+        self.send_email = send_email
+        self.send_text = send_text
+
 class SchoolWeather(object):
     def __init__(self, lat, lng):
-
         self.lat = lat
         self.lng = lng
         self.date = '{}T12:00:00-0400'.format(datetime.date.today())
@@ -176,6 +212,4 @@ def convert_unixtime_time(unix_time):
 
 def convert_to_celsius(tempF):
     return round((int(tempF) -  32)*.55)
-
-
 

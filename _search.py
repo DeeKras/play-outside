@@ -28,7 +28,6 @@ def find_lnglat_by_search():
     return lat, lng
 
 def find_lnglat_by_ip():
-    print 'x'
     ip = request.remote_addr
     if '127.0.0.1' == ip:
         ip = requests.get("http://icanhazip.com/").content

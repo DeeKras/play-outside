@@ -1,9 +1,13 @@
-<form  action = 'search'>
+<form  action="/search" method="post">
 <h4>
 	{%if flag == '0'%}
-		We detect that you are in {{place}}. 
-		<input type = 'submit' name = 'change' value = 'Change!'>
+		We detected your location:
+	{% elif flag =='1' %}
+        Results for your search for {{filler}}:
+    {% elif flag == '2' %}
+        Welcome {{filler}}!
 	{%endif%}
+    <input type = 'submit' name = 'change' value = 'Change location!'>
 </h4>
 </form>
 {% block content %}{% endblock %}
