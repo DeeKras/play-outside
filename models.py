@@ -93,7 +93,7 @@ class SchoolWeather(object):
         self.json_response = requests.get(lookup_url).json()
 
         self.weather_data = self.json_response[u'hourly'][u'data']
-        self.hourly = self.create__weatherdetails_dict()
+        self.hourly = self.create_weatherdetails_dict()
 
 
 
@@ -154,14 +154,14 @@ class SchoolWeather(object):
 
     def pretty_temperatures(self,_tempF):
         _tempC = convert_to_celsius(_tempF)
-        return '{}F/{}C'.format(_tempF, _tempC)
+        return '{:<20}F / {:>20} C'.format(_tempF, _tempC)
 
     def pretty_windspeed(self, _windspeed):
         return '{} mph'.format(_windspeed)
 
     def pretty_windchill(self, _windchillF):
         _windchillC = convert_to_celsius(_windchillF)
-        return '{}F/{}C'.format(_windchillF, _windchillC)
+        return '{:<20}F / {:>20} C'.format(_windchillF, _windchillC)
 
     def should_play_outside(self, windchill):
         if windchill>=32:
@@ -174,31 +174,30 @@ class SchoolWeather(object):
         return playability
 
 #---------------
-    def create__weatherdetails_dict(self):
+    def create_weatherdetails_dict(self):
         # this should create a dictionaty of the pretty data - to be passed to html. this can be in the views module
         self.find_place_from_latlng()
         self.set_pretty_date(self.date)
-
-        hourly = []
 
         gmt_offset = self.json_response[u'offset']
         start_point = 9 + gmt_offset
         end_point = start_point + 8
 
+        hourly = []
+
         for i in range(start_point, end_point):
-            hour = {}
+            windchill = self.calculate_windchill(self.find_windspeed(i), self.find_temperature(i))
             
-            hour['hour'] = self.pretty_hour(self.find_hour(i))
-            hour['temperature'] = self.pretty_temperatures(self.find_temperature(i))
-            hour['windspeed'] =  self.pretty_windspeed(self.find_windspeed(i))
-            
-            hour['precipType'] = self.find_precip(i)[0]
-            hour['precipProbability']= self.find_precip(i)[1]
-            hour['precipIntensity'] = self.find_precip(i)[2]
-
-            hour['windchill'] = self.pretty_windchill(self.calculate_windchill(self.find_windspeed(i), self.find_temperature(i)))
-            hour['playability'] = self.should_play_outside(self.calculate_windchill(self.find_windspeed(i), self.find_temperature(i)))
-
+            hour = {
+                    'hour': self.pretty_hour(self.find_hour(i)),
+                    'temperature': self.pretty_temperatures(self.find_temperature(i)),
+                    'windspeed': self.pretty_windspeed(self.find_windspeed(i)),
+                    'precipType': self.find_precip(i)[0],
+                    'precipProbability': self.find_precip(i)[1],
+                    'precipIntensity': self.find_precip(i)[2],
+                    'windchill': self.pretty_windchill(windchill),
+                    'playability': self.should_play_outside(windchill)
+                    }
             hourly.append(hour)
         return hourly
 

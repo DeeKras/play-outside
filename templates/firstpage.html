@@ -1,5 +1,5 @@
 <form  action="/search" method="post">
-<h4>
+<h2><font color="blue">
 	{%if flag == '0'%}
 		We detected your location:
 	{% elif flag =='1' %}
@@ -7,7 +7,8 @@
     {% elif flag == '2' %}
         Welcome {{filler}}!
 	{%endif%}
+    </font>
     <input type = 'submit' name = 'change' value = 'Change location!'>
-</h4>
+</h2>
 </form>
 {% block content %}{% endblock %}

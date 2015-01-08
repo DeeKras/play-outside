@@ -18,49 +18,29 @@ db.create_all()
 @app.route('/weather', methods=['GET', 'POST'])
 def weather():
     form = SearchForm()
+
     if request.method == 'POST':
+
         if form.search_by.data not in ['postal', 'place', 'code']:
             flash('You must click one of the radio buttons')
             return render_template('search.html', form=SearchForm())
         
-        if form.search_by.data == 'postal':
-            if form.postal.data == "":
-                flash('You selected POSTAL but you did not include a postal code. Please enter a postal code.')
-                return redirect(url_for('search'))
-            else:
-                try:
-                    lat, lng = find_by_postal(form.postal.data)
-                    flag = '1'
-                    filler = form.postal.data
-                except TypeError:
-                   flash('The postal code you selected is not valid. Please check the number and try again.')
-                   return redirect(url_for('search'))
+        elif form.search_by.data == 'postal':
+            postal_data = form.postal.data
+            lat, lng, flag, filler = weather_by_postal(postal_data)
 
+        elif form.search_by.data == 'place':  #TODO: Need to figure out how to get places from outside US
+            country_data = form.country.data
+            state_data = form.state.data
+            city_data = form.city.data
+            lat, lng, flag, filler = weather_by_place(country_data, state_data, city_data)
         
-        elif form.search_by.data == 'place':
-            if form.country.data == "" or form.state.data == "" or form.city.data == "":
-                flash('You selected PLACE but you did not include either a country, state or city. Please enter all 3.')
-                return redirect(url_for('search'))
-            else:
-                try:
-                    lat, lng = find_by_place(form.state.data, form.city.data)
-                    flag = '1'
-                    filler = '{}, {}'.format(form.city.data, form.state.data)
-                except TypeError:
-                    flash('The state or city is inaccurate. Please try again.')
-                    return redirect(url_for('search'))
+        elif form.search_by.data == 'code':  #TODO: need to add codes to the db
+            code_data = form.code.data
+            lat, lng, flag, filler = weather_by_code(code_data)
         
-        elif form.search_by.data == 'code':  #need to add codes to the db
-            if form.code.data == "":
-                flash('You selected CODE but you did not include your code. Please enter it.')
-                return redirect(url_for('search'))
-            else:
-                lat, lng, school = find_by_code(form.code.data )
-                flag = '2'
-                filler = school
     else:
-        ip = request.remote_addr
-        lat, lng = find_by_ip(ip)
+        lat, lng = find_by_ip()
         flag = '0'
         filler = ""
 
@@ -74,6 +54,7 @@ def weather():
    
 @app.route('/search',  methods=['GET', 'POST'])   
 def search():
+    print 'search'
     return render_template('search.html', form=SearchForm())
 
 
@@ -103,7 +84,8 @@ def school_info():
                                             display_date=display_date,
                                             place=place,
                                             filler=filler,
-                                            flag=flag)
+                                            flag=flag
+                                            )
 
     if request.method == 'GET':
         return render_template('schoolform.html', form=SchoolForm())
@@ -125,3 +107,49 @@ def find_by_code(code):
     return lat, lng, school
 
 
+def weather_by_postal(postal_data):
+    if postal_data == "":
+        flash('You selected POSTAL but you did not include a postal code. Please enter a postal code.')
+        return redirect(url_for('search'))
+    else:
+        try:
+            flag = '1'
+            filler = postal_data
+            lat, lng = find_by_postal(postal_data)
+            return lat, lng, flag, filler
+        except (TypeError, ValueError):
+            print 'postal error'
+            flash('The postal code you selected is not valid. Please check the number and try again.')
+            return redirect(url_for('search'))
+  
+
+
+def weather_by_place(country_data, state_data, city_data):
+    if country_data == "" or state_data == "" or city_data == "":
+        flash('You selected PLACE but you did not include either a country, state or city. Please enter all 3.')
+        return redirect(url_for('search'))
+    else:
+        try:
+            lat, lng = find_by_place(state_data, city_data)
+            flag = '1'
+            filler = '{}, {}'.format(city_data, state_data)
+            return lat, lng, flag, filler
+        except TypeError:
+            flash('The state or city is inaccurate. Please try again.')
+            return redirect(url_for('search'))
+
+
+
+def weather_by_code(code_data):
+    if code_data == "":
+        flash('You selected CODE but you did not include your code. Please enter it.')
+        return redirect(url_for('search'))
+    else:
+        try:
+            lat, lng, school = find_by_code(code_data)
+            flag = '2'
+            filler = school
+            return lat, lng, flag, filler 
+        except (AttributeError, TypeError):
+            flash('The CECE-code is inaccurate. Please try again.')
+            return redirect(url_for('search'))
