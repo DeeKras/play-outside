@@ -27,17 +27,29 @@ def weather():
         
         elif form.search_by.data == 'postal':
             postal_data = form.postal.data
-            lat, lng, flag, filler = weather_by_postal(postal_data)
+            var = weather_by_postal(postal_data)
+            if var:
+               lat, lng, flag, filler = var
+            else:
+                return redirect(url_for('search'))
 
         elif form.search_by.data == 'place':  #TODO: Need to figure out how to get places from outside US
             country_data = form.country.data
             state_data = form.state.data
             city_data = form.city.data
-            lat, lng, flag, filler = weather_by_place(country_data, state_data, city_data)
+            var = weather_by_place(country_data, state_data, city_data)
+            if var:
+               lat, lng, flag, filler = var
+            else:
+                return redirect(url_for('search'))
         
         elif form.search_by.data == 'code':  #TODO: need to add codes to the db
             code_data = form.code.data
-            lat, lng, flag, filler = weather_by_code(code_data)
+            var = weather_by_code(code_data)
+            if var:
+               lat, lng, flag, filler = var
+            else:
+                return redirect(url_for('search'))
         
     else:
         lat, lng = find_by_ip()
@@ -118,9 +130,8 @@ def weather_by_postal(postal_data):
             lat, lng = find_by_postal(postal_data)
             return lat, lng, flag, filler
         except (TypeError, ValueError):
-            print 'postal error'
             flash('The postal code you selected is not valid. Please check the number and try again.')
-            return redirect(url_for('search'))
+            return 
   
 
 
@@ -136,7 +147,7 @@ def weather_by_place(country_data, state_data, city_data):
             return lat, lng, flag, filler
         except TypeError:
             flash('The state or city is inaccurate. Please try again.')
-            return redirect(url_for('search'))
+            return 
 
 
 
@@ -152,4 +163,4 @@ def weather_by_code(code_data):
             return lat, lng, flag, filler 
         except (AttributeError, TypeError):
             flash('The CECE-code is inaccurate. Please try again.')
-            return redirect(url_for('search'))
+            return 
