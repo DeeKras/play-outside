@@ -5,7 +5,7 @@ import time
 import math
 import datetime
 
-from functions import find_by_postal
+
 from config import db
 
 forecast_io_key = 'fc0baa44318f233c63d149ae0fea7c85'
