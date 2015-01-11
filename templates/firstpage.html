@@ -1,7 +1,7 @@
 <form  action="/search" method="post">
 <h2><font color="blue">
 	{%if flag == '0'%}
-		We detected your location:
+		We detected your location: {{filler}}:
 	{% elif flag =='1' %}
         Results for your search for {{filler}}:
     {% elif flag == '2' %}

@@ -37,25 +37,20 @@ def display_weather(form):
         return redirect(url_for('search'))  # need to figure out how to leave the inputed data in the 
                                             # in the search form when it is rendered. is that javascript?
     else:
-        (hourly, display_date, place), flag, filler = weather
-        print place, filler
+        (hourly, display_date), flag, filler = weather
         return render_template("weather.html", hourly=hourly,
                                         display_date=display_date,
-                                        place=place,
                                         filler=filler,
                                         flag=flag)
 
   
 @app.route('/search',  methods=['GET', 'POST'])   
 def search():
-    print 'search'
-    print request.method
     return render_template('search.html', form=SearchForm())
 
 
 @app.route('/school_info', methods=['GET', 'POST'])
 def school_info():
-    print request.method
     if request.method =='POST':
         form = SchoolForm()
         school = SchoolData(form.email.data,
@@ -73,10 +68,9 @@ def school_info():
         db.session.add(school)
         db.session.commit()
 
-        hourly, display_date, place = get_weather_info(school.latitude, school.longitude)
+        hourly, display_date = get_weather_info(school.latitude, school.longitude)
         return render_template("weather.html", hourly=hourly,
                                             display_date=display_date,
-                                            place=place,
                                             filler=form.school_name.data,
                                             flag='2')    
 

@@ -5,15 +5,11 @@ import time
 import math
 import datetime
 
-
 from config import db
 
 forecast_io_key = 'fc0baa44318f233c63d149ae0fea7c85'
 api_forecast_io = 'https://api.forecast.io/forecast/{}/{},{},{}'
-api_googlemaps = 'http://maps.googleapis.com/maps/api/geocode/json?latlng={},{}&sensor=true'
-
-
-
+api_googlemaps = 'http://maps.googleapis.com/maps/api/geocode/json?address={}'
 
 
 class Search(db.Model):
@@ -76,20 +72,22 @@ class SchoolData(db.Model):
         self.cellphone = cellphone
         self.send_email = send_email
         self.send_text = send_text
+        self.latitude = ''
+        self.longitude = ''
 
-    def find_lng_lat(self):
+    
         # needs error trapping if user entered inaccurate info
         if self.country.lower() in ['us', 'usa', "united states"]:
             api = "http://api.zippopotam.us/us/{}".format(self.postal)
             json_response = requests.get(api).json()
-            self.lat = json_response['places'][0]['latitude']
-            self.lng = json_response['places'][0]['longitude']
+            self.latitude = json_response['places'][0]['latitude']
+            self.longitude = json_response['places'][0]['longitude']
         else:
             search_place = '{},{},{}'.format(self.country, self.state, self.city)
             api = api_googlemaps.format(search_place)
             json_response = requests.get(api).json()
-            self.lat = json_response['results'][0]['geometry']['location']['lat']
-            self.lng = json_response['results'][0]['geometry']['location']['lng']
+            self.latitude = json_response['results'][0]['geometry']['location']['lat']
+            self.longitude = json_response['results'][0]['geometry']['location']['lng']
 
         
 class SchoolWeather(object):
@@ -97,10 +95,6 @@ class SchoolWeather(object):
         self.lat = lat
         self.lng = lng
         self.date = '{}T12:00:00-0400'.format(datetime.date.today())
-        self.neighborhood = ""
-        self.city = ""
-        self.state = ""
-        self.country = ""
         self.pretty_date = ""
 
         lookup_url = api_forecast_io.format(forecast_io_key, self.lat, self.lng, self.date)
@@ -109,25 +103,8 @@ class SchoolWeather(object):
         self.weather_data = self.json_response[u'hourly'][u'data']
         self.hourly = self.create_weatherdetails_dict()
 
-
-
     # def __call__(self):  #how to get this to call
        
-
-
-        
-    def find_place_from_latlng(self):
-        lookup_url = api_googlemaps.format(self.lat, self.lng)
-        json_response = requests.get(lookup_url).json()
-
-        address_components = json_response[u'results'][0][u'address_components']
-        self.neighborhood = address_components[2][u'long_name']
-        self.city =  address_components[3][u'long_name']
-        self.state = address_components[5][u'long_name']
-        self.country = address_components[6][u'long_name']
-
-
-
  
 # ----------------
     def find_hour(self, i):
@@ -190,7 +167,6 @@ class SchoolWeather(object):
 #---------------
     def create_weatherdetails_dict(self):
         # this should create a dictionaty of the pretty data - to be passed to html. this can be in the views module
-        self.find_place_from_latlng()
         self.set_pretty_date(self.date)
 
         gmt_offset = self.json_response[u'offset']

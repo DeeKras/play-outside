@@ -6,8 +6,12 @@ from forms import SearchForm, SchoolForm
 from models import SchoolData, SchoolWeather
 from config import  db
 
+ipinfo_key = '607dd31739e77a661a0152941384503e0d190bd9166a89ff2cd130cc4121ede4'
+
 geoip_data = pygeoip.GeoIP('/home/deekras/PythonEnv/My work/Playoutside/GeoLiteCity.dat')
 api_googlemaps = 'http://maps.googleapis.com/maps/api/geocode/json?address={}'
+ipinfo_api = 'http://api.ipinfodb.com/v3/ip-city/?key={}&format=json'.format(ipinfo_key)
+# http://api.ipinfodb.com/v3/ip-city/?key=<your_api_key>&ip=74.125.45.100&format=json
 
        
 
@@ -43,21 +47,26 @@ def get_weather_info(lat, lng):
     weather_for_city = SchoolWeather(lat, lng)
     hourly = weather_for_city.hourly
     display_date = weather_for_city.pretty_date
-    place = '{}, {} {}'.format(weather_for_city.city, weather_for_city.state, weather_for_city.country)
-    return hourly, display_date, place
-    
+    return hourly, display_date
 
 def weather_by_ip():
-    ip = request.remote_addr
-    if ip == '127.0.0.1':
-        ip = requests.get("http://icanhazip.com/").content
-    data = geoip_data.record_by_addr(ip)
+    # ip = request.remote_addr
+    # if ip == '127.0.0.1':
+    #     # ip = requests.get("http://icanhazip.com/").content
+        
+    # data = geoip_data.record_by_addr( ip)
 
-    lat = data['latitude']
-    lng = data['longitude']
+    # lat = data['latitude']
+    # lng = data['longitude']
+    ip_data = requests.get(ipinfo_api).json()
+    lat = ip_data['latitude']
+    lng = ip_data['longitude']
+    city = ip_data['cityName']
+    region = ip_data['regionName']
+    country = ip_data['countryName']
 
     flag = '0'
-    filler = ""
+    filler = '{}, {} {}'.format(city, region, country)
     weather = get_weather_info(lat, lng), flag, filler
     error = None
     return weather, error
@@ -78,7 +87,6 @@ def weather_by_postal(postal):
         filler = postal
         weather = get_weather_info(lat, lng), flag, filler
         error = None
-    print error, weather
     return weather, error
 
 
@@ -100,7 +108,7 @@ def weather_by_place(country, state, city):
         lng = json_response['results'][0]['geometry']['location']['lng']
 
         flag = '1'
-        filler = '{}, {}'.format(city, state)
+        filler = search_place
         weather = get_weather_info(lat, lng), flag, filler
         error = None
     return weather, error
