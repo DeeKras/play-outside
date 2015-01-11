@@ -72,11 +72,19 @@ class SchoolData(db.Model):
         self.state = state
         self.postal = postal
         self.country = country
-        self.longitude = find_by_postal(postal)[1]
-        self.latitude = find_by_postal(postal)[0]
+        self.longitude = find_lng_lat(postal)[1]
+        self.latitude = find_lng_lat(postal)[0]
         self.cellphone = cellphone
         self.send_email = send_email
         self.send_text = send_text
+
+def find_lng_lat(postal):
+    api = "http://api.zippopotam.us/us/{}".format(postal)
+    json_response = requests.get(api).json()
+    lat = json_response['places'][0]['latitude']
+    lng = json_response['places'][0]['longitude']
+    return lat, lng
+    
 
 class SchoolWeather(object):
     def __init__(self, lat, lng):

@@ -22,6 +22,6 @@ class SchoolForm(Form):
     state = StringField(label='State', validators=[DataRequired()])
     postal = StringField(label='Postal Code', validators=[DataRequired()])
     country = StringField(label='Country', validators=[DataRequired()])
-    cellphone = StringField(label='Country', validators=[DataRequired()])
+    cellphone = StringField(label='Cell Phone', validators=[DataRequired()])
     send_email = BooleanField(label='Send me email every morning', default=True)
     send_text = BooleanField(label='Send me text every morning', default=True)
