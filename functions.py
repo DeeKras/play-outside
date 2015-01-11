@@ -7,25 +7,23 @@ from models import SchoolData, SchoolWeather
 from config import  db
 
 geoip_data = pygeoip.GeoIP('/home/deekras/PythonEnv/My work/Playoutside/GeoLiteCity.dat')
-
+api_googlemaps = 'http://maps.googleapis.com/maps/api/geocode/json?address={}'
 
        
 
 
 def verify_input(form):
-    print 'start verify'
     error=""
     if form.search_by.data not in ['postal', 'place', 'code']:
         error = 'You must click one of the radio buttons'
     elif form.search_by.data == 'postal' and form.postal.data == "":
         error = 'You selected POSTAL but you did not include a postal code. Please enter a postal code.'
-    elif form.search_by.data == 'place' and \
-            (form.country.data == "" or form.state.data == "" or form.city.data == ""):
-        error = 'You selected PLACE but you did not include either a country, state or city. Please enter all 3.'
+    elif form.search_by.data == 'place' and form.country.data == "":
+        error = 'You selected PLACE but you did not include a country. Please enter a country.'
+    elif form.search_by.data == 'place' and form.city.data == "":
+        error = 'You selected PLACE but you did not include a city. Please enter a city.'
     elif form.search_by.data == 'code' and form.code.data == "":
         error = 'You selected CODE but you did not include your code. Please enter it.'
-    print 'error: ' + error
-    print 'end verify'
     return error
 
 def get_weather(form):
@@ -69,7 +67,6 @@ def weather_by_ip():
 def weather_by_postal(postal):
     api = "http://api.zippopotam.us/us/{}".format(postal)
     json_response = requests.get(api).json()
-    print 'in postal'
     if json_response == {}:
         weather = None
         error = 'The postal code you entered is not valid. Please reenter.'
@@ -87,14 +84,20 @@ def weather_by_postal(postal):
 
 
 def weather_by_place(country, state, city):
-    api = "http://api.zippopotam.us/us/{}/{}".format(state, city)
+    #needs error trapping if country = us and no state provided
+    if state:
+        search_place = '{},{},{}'.format(country, state, city)
+    else:
+        search_place = '{},{}'.format(country, city)
+    
+    api = api_googlemaps.format(search_place)
     json_response = requests.get(api).json()
-    if json_response == {}:
+    if json_response[u'status'] == u'ZERO_RESULTS':
         weather = None
         error = 'The data you entered in not accurate. Please reenter.'
     else:
-        lat = json_response['places'][0]['latitude']
-        lng = json_response['places'][0]['longitude']
+        lat = json_response['results'][0]['geometry']['location']['lat']
+        lng = json_response['results'][0]['geometry']['location']['lng']
 
         flag = '1'
         filler = '{}, {}'.format(city, state)
@@ -110,7 +113,6 @@ def weather_by_code(code):
         weather = None
         error = 'The CECE-code is inaccurate. Please try again.'
     else:
-        print school
         lat = school.latitude
         lng = school.longitude
 

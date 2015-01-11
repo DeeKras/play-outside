@@ -15,6 +15,7 @@ api_googlemaps = 'http://maps.googleapis.com/maps/api/geocode/json?latlng={},{}&
 
 
 
+
 class Search(db.Model):
     timestamp = db.Column(db.DateTime, primary_key=True)
     search_by = db.Column(db.String)
@@ -72,20 +73,25 @@ class SchoolData(db.Model):
         self.state = state
         self.postal = postal
         self.country = country
-        self.longitude = find_lng_lat(postal)[1]
-        self.latitude = find_lng_lat(postal)[0]
         self.cellphone = cellphone
         self.send_email = send_email
         self.send_text = send_text
 
-def find_lng_lat(postal):
-    api = "http://api.zippopotam.us/us/{}".format(postal)
-    json_response = requests.get(api).json()
-    lat = json_response['places'][0]['latitude']
-    lng = json_response['places'][0]['longitude']
-    return lat, lng
-    
+    def find_lng_lat(self):
+        # needs error trapping if user entered inaccurate info
+        if self.country.lower() in ['us', 'usa', "united states"]:
+            api = "http://api.zippopotam.us/us/{}".format(self.postal)
+            json_response = requests.get(api).json()
+            self.lat = json_response['places'][0]['latitude']
+            self.lng = json_response['places'][0]['longitude']
+        else:
+            search_place = '{},{},{}'.format(self.country, self.state, self.city)
+            api = api_googlemaps.format(search_place)
+            json_response = requests.get(api).json()
+            self.lat = json_response['results'][0]['geometry']['location']['lat']
+            self.lng = json_response['results'][0]['geometry']['location']['lng']
 
+        
 class SchoolWeather(object):
     def __init__(self, lat, lng):
         self.lat = lat
