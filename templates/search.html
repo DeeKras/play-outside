@@ -2,47 +2,60 @@
 
 
 <head>
-	<h2>
-		Search for weather in :
-	</h2>
+	<h1>
+		WEATHER WATCH!
+	</h1>
 </head>
 <body>
 	<form name = 'searchby', method = 'post', action ="/weather">
 		<table>
 		  <col width="150" height="20">
-		  <col width="700">
-		  <strong>Search for:</strong>
-			{% for choice in form.search_by %}
-				{{choice}}{{choice.label}}
-			{% endfor %}<br><br>
+		  <col width="600">
 			<tr>
 				<td>
-					<b>Postal:</b>
+					Zip Code (US only):
+				<td>
+					{{form.zipcode(placeholder='zip code')}}
 				</td>
 				<td>
-					{{form.postal.label}}: {{form.postal}}
+					{{form.submit_zip}}
 				</td>
 			</tr>
 			<tr>
 				<td>
-					<b>Place:</b>
 				</td>
-				<td>
-					{{form.country.label}}: {{form.country}} 
-					{{form.state.label}}: {{form.state}}
-					{{form.city.label}}: {{form.city}}
-				</td>
+			</tr>
 			<tr>
 				<td>
-					<b>CECE Code: </b>
+					Place:
 				</td>
 				<td>
-					{{form.code.label}}: {{form.code}} 
+					{{form.country(placeholder='country')}} 
+					{{form.state(placeholder='region/ state')}}
+					{{form.city(placeholder='city')}}
+				</td>
+				<td>
+					{{form.submit_place}}			
+				</td>
+			</tr>
+			<tr>
+				<td>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					CECE code:
+				</td>
+				<td>
+					{{form.code(placeholder='CECE code')}} 
+				</td>
+				<td>
+					{{form.submit_code}}
 				</td>
 			</tr>
 		</table>
 		<br><br>
-		<input type = 'submit' name = 'Find my weather!'>
+		
 		{% with messages = get_flashed_messages() %}
 		{% if messages %}
 			{% for message in messages %}

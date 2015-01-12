@@ -17,31 +17,28 @@ ipinfo_api = 'http://api.ipinfodb.com/v3/ip-city/?key={}&format=json'.format(ipi
 
 
 def verify_input(form):
-    error=""
-    if form.search_by.data not in ['postal', 'place', 'code']:
-        error = 'You must click one of the radio buttons'
-    elif form.search_by.data == 'postal' and form.postal.data == "":
-        error = 'You selected POSTAL but you did not include a postal code. Please enter a postal code.'
-    elif form.search_by.data == 'place' and form.country.data == "":
-        error = 'You selected PLACE but you did not include a country. Please enter a country.'
-    elif form.search_by.data == 'place' and form.city.data == "":
-        error = 'You selected PLACE but you did not include a city. Please enter a city.'
-    elif form.search_by.data == 'code' and form.code.data == "":
-        error = 'You selected CODE but you did not include your code. Please enter it.'
-    return error
+    if form.submit_code.data and form.code.data == "":
+        return 'You selected CODE but you did not include your code. Please enter it.'
+    elif form.submit_zip.data and form.zipcode.data == "":
+        return 'You selected ZIP but you did not include a zip code. Please enter a US ZIP CODE.'
+    elif form.submit_place.data and form.country.data == "":
+        return 'You selected PLACE but you did not include a country. Please enter a COUNTRY.'
+    elif form.submit_place.data and form.city.data == "":
+        return 'You selected PLACE but you did not include a city. Please enter a CITY.'
+    elif form.submit_place.data and form.country.data.lower() in ['us', 'usa', 'united states'] and form.state.data =="":
+        return 'You entered US as country, you must also submit STATE and CITY.'
+    return None
 
 def get_weather(form):
-    if form.search_by.data == 'postal':
-        weather, error = weather_by_postal(form.postal.data)
-    elif form.search_by.data == 'place':
+    if form.submit_zip.data:
+        weather, error = weather_by_zip(form.zipcode.data)
+    elif form.submit_place.data:
         weather, error = weather_by_place(form.country.data, form.state.data, form.city.data)
-    elif form.search_by.data == 'code':                                            
+    elif form.submit_code.data:                                            
         weather, error = weather_by_code(form.code.data)
     else:
         weather, error = weather_by_ip()
-
     return weather, error
-
 
 def get_weather_info(lat, lng):
     weather_for_city = SchoolWeather(lat, lng)
@@ -50,14 +47,6 @@ def get_weather_info(lat, lng):
     return hourly, display_date
 
 def weather_by_ip():
-    # ip = request.remote_addr
-    # if ip == '127.0.0.1':
-    #     # ip = requests.get("http://icanhazip.com/").content
-        
-    # data = geoip_data.record_by_addr( ip)
-
-    # lat = data['latitude']
-    # lng = data['longitude']
     ip_data = requests.get(ipinfo_api).json()
     lat = ip_data['latitude']
     lng = ip_data['longitude']
@@ -71,28 +60,23 @@ def weather_by_ip():
     error = None
     return weather, error
 
-
-
-def weather_by_postal(postal):
-    api = "http://api.zippopotam.us/us/{}".format(postal)
+def weather_by_zip(zipcode):
+    api = "http://api.zippopotam.us/us/{}".format(zipcode)
     json_response = requests.get(api).json()
     if json_response == {}:
         weather = None
-        error = 'The postal code you entered is not valid. Please reenter.'
+        error = 'The zip code you entered is not valid. Please reenter.'
     else:
         lat = json_response['places'][0]['latitude']
         lng = json_response['places'][0]['longitude']
         
         flag = '1'
-        filler = postal
+        filler = zipcode
         weather = get_weather_info(lat, lng), flag, filler
         error = None
     return weather, error
 
-
-
 def weather_by_place(country, state, city):
-    #needs error trapping if country = us and no state provided
     if state:
         search_place = '{},{},{}'.format(country, state, city)
     else:
@@ -112,12 +96,10 @@ def weather_by_place(country, state, city):
         weather = get_weather_info(lat, lng), flag, filler
         error = None
     return weather, error
-            
 
 def weather_by_code(code):
     school = db.session.query(SchoolData).filter_by(CECE_code=code).first()
     if school is None:
-        
         weather = None
         error = 'The CECE-code is inaccurate. Please try again.'
     else:
@@ -129,9 +111,4 @@ def weather_by_code(code):
         weather = get_weather_info(lat, lng), flag, filler
         error = None
     return weather, error
-
-
-
-
-
 

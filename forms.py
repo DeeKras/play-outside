@@ -1,15 +1,17 @@
 from flask_wtf import Form
-from wtforms import StringField, RadioField, BooleanField
+from wtforms import StringField, RadioField, BooleanField, SubmitField
 from wtforms.validators import DataRequired
 
 class SearchForm(Form):
-    search_by = RadioField( choices=[('postal', 'Postal'),('place','Place'), ('code', 'Code')],
-                            validators=[DataRequired(),])
-    postal = StringField(label='Postal Code')
-    country = StringField(label='Country', default="US")
+
+    zipcode = StringField(label='Zip Code')
+    country = StringField(label='Country')
     state = StringField(label='State')
     city = StringField(label='City')
     code = StringField(label='CECE Code')
+    submit_code = SubmitField('Search by CECE CODE')
+    submit_place = SubmitField('Search by PLACE')
+    submit_zip = SubmitField('Search by ZIP CODE')
 
 
 class SchoolForm(Form):
