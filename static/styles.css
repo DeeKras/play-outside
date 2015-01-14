@@ -1,0 +1,36 @@
+body {
+    background-color: white;
+    color: blue;
+    margin: 50px 100px;
+    width: 850px;
+}
+
+div {
+    width: 800px;
+    font-family:Arial, sans-serif;
+    color: blue;
+    text-align: left;
+    background-color: #CCFFFF;
+    border: 1px solid gray;
+    border-radius: 4px;
+    box-shadow: 4px 4px 5px #888888;
+    padding: 20px 25px;
+}
+
+.filler {
+    font-size: 1.5em;
+    font-weight: bold;
+    color:red;
+}
+
+.search_button {
+    position: absolute;
+    left: 700px;
+    display: block;
+    width: 200px;
+    text-align: center;
+    background-color: white;
+    border: 1px solid gray;
+    border-radius: 1px;
+}
+
