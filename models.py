@@ -4,6 +4,7 @@ import requests
 import time
 import math
 import datetime
+from string import capwords
 
 from config import db
 
@@ -19,31 +20,20 @@ class Search(db.Model):
     country = db.Column(db.String)
     state = db.Column(db.String)
     city = db.Column(db.String)
-    code = db.Column(db.String)
+    user_name = db.Column(db.String)
 
-    def __init__(self, timestamp, search_by, postal, country, state, city, code):
+    def __init__(self, timestamp, search_by, postal, country, state, city, user_name):
         self.timestamp = timestamp
         self.search_by = search_by
         self.postal = postal
         self.country = country
         self.state = state
         self.city = city
-        self.code = code
+        self.user_name = user_name
 
-    def __repr__(self):
-        if self.search_by == "postal":
-            searched = self.postal
-        elif self.search_by == "place":
-            searched = "{}: {}, {}".format(self.country, self.state, self.city)
-        elif self.search_by == "code":
-            searched = self.code
-        else:
-            searched = 'by IP'
-
-        return 'Searched for : {}'.format(searched)
 
 class SchoolData(db.Model):
-    CECE_code = db.Column(db.String, primary_key=True)
+    user_name = db.Column(db.String, primary_key=True)
     email = db.Column(db.String, nullable=False)
     school_name = db.Column(db.String, nullable=False)
     first_name = db.Column(db.String, nullable=False)
@@ -58,26 +48,33 @@ class SchoolData(db.Model):
     send_email = db.Column(db.Boolean, default=True)
     send_text = db.Column(db.Boolean, default=True)
 
-    def __init__(self, email, school_name, first_name, last_name, 
+    def __init__(self, user_name, email, school_name, first_name, last_name, 
                     city, state, postal, country, cellphone, send_email, send_text):
-        self.CECE_code = str("Z{}".format(randrange(99999,9999999)))
+        self.user_name = user_name
         self.email = email
-        self.school_name = school_name
-        self.first_name = first_name
-        self.last_name = last_name
-        self.city = city
-        self.state = state
+        self.school_name = school_name.title()
+        self.first_name = first_name.title()
+        self.last_name = last_name.title()
+        self.city = city.title()
         self.postal = postal
-        self.country = country
         self.cellphone = cellphone
         self.send_email = send_email
         self.send_text = send_text
         self.latitude = ''
         self.longitude = ''
 
+
+        if country.lower() in ['us', 'usa', 'united states']:
+            self.country = "USA"
+            if len(state) == 2:
+                self.state = state.upper()
+            else:
+                self.state = state.title()
+        else:
+            self.country = country.title()
+        
     
-        # needs error trapping if user entered inaccurate info
-        if self.country.lower() in ['us', 'usa', "united states"]:
+        if self.country == 'USA' and postal:
             api = "http://api.zippopotam.us/us/{}".format(self.postal)
             json_response = requests.get(api).json()
             self.latitude = json_response['places'][0]['latitude']

@@ -1,14 +1,42 @@
-<form  action="/search" method="post">
-<h2><font color="blue">
-	{%if flag == '0'%}
-		We detected your location: {{filler}}:
-	{% elif flag =='1' %}
-        Results for your search for {{filler}}:
-    {% elif flag == '2' %}
-        Welcome {{filler}}!
-	{%endif%}
-    </font>
-    <input type = 'submit' name = 'change' value = 'Change location!'>
-</h2>
-</form>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Weather Watch</title>
+    <link rel="stylesheet" type="text/css" href="static/styles.css">
+</head>
+
+
+<body>
+
+<div>
+    	<table>
+        <tr>
+            <td>
+                {%if flag == '0'%}
+        		  We detected your location <br><span class="filler">{{filler}}</span>
+        	    {% elif flag =='1' %}
+                  Results for your search for <br><span class="filler">{{filler}}</span>
+                {% elif flag == '2' %}
+                  Welcome <span class="filler">{{filler}}</span>
+        	    {%endif%}
+            </td>
+            <td>
+                <form  action="/search" method="POST">
+                    <span class="search_button"><input type = 'submit' value = 'Change location!'></span>
+                </form>
+                <br><br>
+                <form action="/school_info", method="GET">
+                    <span class="search_button"><input type = "submit" value="Register my school"></span>
+                </form>
+            </td>
+        </tr>
+        </table>
+</div>
+
+
+
+
 {% block content %}{% endblock %}
+</body>
+</html>

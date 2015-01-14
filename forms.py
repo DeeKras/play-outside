@@ -8,14 +8,15 @@ class SearchForm(Form):
     country = StringField(label='Country')
     state = StringField(label='State')
     city = StringField(label='City')
-    code = StringField(label='CECE Code')
-    submit_code = SubmitField('Search by CECE CODE')
+    user_name = StringField(label='User Name')
+    submit_user = SubmitField('Search by YOUR ACCOUNT')
     submit_place = SubmitField('Search by PLACE')
     submit_zip = SubmitField('Search by ZIP CODE')
 
 
 class SchoolForm(Form):
-    CECE_code = StringField(label='CECE code')
+    #need error message if required data is not submitted.
+    user_name = StringField(label='User Name', validators=[DataRequired()])
     email = StringField(label='Email', validators=[DataRequired()])
     school_name = StringField(label='School', validators=[DataRequired()])
     first_name = StringField(label='First Name', validators=[DataRequired()])
