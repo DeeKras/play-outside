@@ -1,20 +1,16 @@
 from flask import Flask, render_template,request, flash, redirect,  session, url_for
 from flask.ext.sqlalchemy import SQLAlchemy
-from flaskext.mail import Mail, Message
-
-import requests
+# from flaskext.mail import  Message
 import pygeoip
-import sqlite3
-from os import urandom
-
 
 from forms import SearchForm, SchoolForm
 from models import SchoolData, SchoolWeather
-from config import app, db, mail
+from config import app, db
+
 from functions import get_weather, verify_input, get_weather_info, weather_by_user
 
 
-geoip_data = pygeoip.GeoIP('/home/deekras/PythonEnv/My work/Playoutside/GeoLiteCity.dat')
+# geoip_data = pygeoip.GeoIP('/home/deekras/PythonEnv/My work/Playoutside/GeoLiteCity.dat')
 
 
 db.create_all()
@@ -43,8 +39,6 @@ def display_specific_school(user_name):
                                         place=place,
                                         flag=flag)
 
-
-
 @app.route('/search',  methods=['GET', 'POST'])   
 def search():
     return render_template('search.html', form=SearchForm())
@@ -70,10 +64,10 @@ def school_info():
         db.session.add(school)
         db.session.commit()
 
-        msg = Message("Welcome to weather watch",  
-                  sender="dee@deekras2.com",  
-                  recipients=[SchoolData(school.email)])
-        mail.send(msg)
+        # msg = Message("Welcome to weather watch",  
+        #           sender="dee@deekras2.com",  
+        #           recipients=[SchoolData(school.email)])
+        # mail.send(msg)
 
         place = '{}, {} {}'.format(school.city, school.state, school.country)
         hourly, display_date = get_weather_info(school.latitude, school.longitude)

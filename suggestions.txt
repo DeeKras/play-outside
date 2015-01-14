@@ -1,7 +1,0 @@
-1. rethink those three functions so that they always return the same type of
-   object instead of depending on state
-
-2. a. fix github pushing workflow (authorization issue?)
-   b. push to github, since everything is good
-
-3. learn C! It is the mother language

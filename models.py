@@ -72,6 +72,7 @@ class SchoolData(db.Model):
                 self.state = state.title()
         else:
             self.country = country.title()
+            self.state = state.title()
         
     
         if self.country == 'USA' and postal:

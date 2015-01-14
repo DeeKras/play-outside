@@ -25,9 +25,11 @@ docutils==0.12
 fancycompleter==0.4
 feedgenerator==1.7
 flake8==2.2.5
+flask-heroku==0.1.9
 geoip2==2.0.2
 geolocate==1.1.0
 ghp-import==0.4.1
+gunicorn==19.1.1
 http==0.02
 httplib2==0.9
 ipaddr==2.1.11
