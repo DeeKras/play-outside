@@ -26,7 +26,7 @@ def try_display_weather():
             flash(error)
             return redirect(url_for('search'))  # need to figure out how to leave the inputed data in the 
                                                 # in the search form when it is rendered. is that javascript?
-    return display_weather(form)
+    return display_weather(form, request)
 
 @app.route('/weather/<user_name>', methods=['GET'])
 def display_specific_school(user_name):
@@ -81,8 +81,8 @@ def school_info():
         return render_template('schoolform.html', form=SchoolForm())
 
 
-def display_weather(form):
-    weather, error = get_weather(form)
+def display_weather(form, request):
+    weather, error = get_weather(form, request)
     if error:
         flash(error)
         return redirect(url_for('search'))  # need to figure out how to leave the inputed data in the 

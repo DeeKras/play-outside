@@ -10,8 +10,10 @@ ipinfo_key = '607dd31739e77a661a0152941384503e0d190bd9166a89ff2cd130cc4121ede4'
 
 # geoip_data = pygeoip.GeoIP('/home/deekras/PythonEnv/My work/Playoutside/GeoLiteCity.dat')
 api_googlemaps = 'http://maps.googleapis.com/maps/api/geocode/json?address={}'
-ipinfo_api = 'http://api.ipinfodb.com/v3/ip-city/?key={}&format=json'.format(ipinfo_key)
+ipinfo_api = 'http://api.ipinfodb.com/v3/ip-city/?key={}&ip={}&format=json'
 # http://api.ipinfodb.com/v3/ip-city/?key=<your_api_key>&ip=74.125.45.100&format=json
+
+
 
        
 
@@ -29,7 +31,7 @@ def verify_input(form):
         return 'You entered US as country, you must also submit STATE and CITY.'
     return None
 
-def get_weather(form):
+def get_weather(form, request):
     if form.submit_zip.data:
         weather, error = weather_by_zip(form.zipcode.data)
     elif form.submit_place.data:
@@ -37,7 +39,7 @@ def get_weather(form):
     elif form.submit_user.data:                                            
         weather, error = weather_by_user(form.user_name.data)
     else:
-        weather, error = weather_by_ip()
+        weather, error = weather_by_ip(request)
     return weather, error
 
 def get_weather_info(lat, lng):
@@ -46,8 +48,13 @@ def get_weather_info(lat, lng):
     display_date = weather_for_city.pretty_date
     return hourly, display_date
 
-def weather_by_ip():
-    ip_data = requests.get(ipinfo_api).json()
+def weather_by_ip(request):
+    if request.headers.getlist("X-Forwarded-For"):
+       ip = request.headers.getlist("X-Forwarded-For")[0]
+    else:
+       ip = request.remote_addr
+
+    ip_data = requests.get(ipinfo_api.format(ipinfo_key, ip)).json()
     lat = ip_data['latitude']
     lng = ip_data['longitude']
     city = ip_data['cityName']
