@@ -31,7 +31,6 @@ class Search(db.Model):
         self.city = city
         self.user_name = user_name
 
-
 class SchoolData(db.Model):
     user_name = db.Column(db.String, primary_key=True)
     email = db.Column(db.String, nullable=False)
@@ -63,17 +62,17 @@ class SchoolData(db.Model):
         self.latitude = ''
         self.longitude = ''
 
-
-        if country.lower() in ['us', 'usa', 'united states']:
-            self.country = "USA"
-            if len(state) == 2:
-                self.state = state.upper()
-            else:
-                self.state = state.title()
-        else:
+        if country.lower() not in ['us', 'usa', 'united states'] and len(country) >4:
             self.country = country.title()
+        elif country in ['us', 'usa', 'united states']:
+            self.country = "USA"
+        elif len(country)< 4:
+            self.country = country.upper()
+ 
+        if len(state) == 2:
+            self.state = state.upper()
+        else:
             self.state = state.title()
-        
     
         if self.country == 'USA' and postal:
             api = "http://api.zippopotam.us/us/{}".format(self.postal)
@@ -164,7 +163,8 @@ class SchoolWeather(object):
 
 #---------------
     def create_weatherdetails_dict(self):
-        # this should create a dictionaty of the pretty data - to be passed to html. this can be in the views module
+        # this should create a dictionaty of the pretty data - to be passed to html. 
+        #this can be in the views module
         self.set_pretty_date(self.date)
 
         gmt_offset = self.json_response[u'offset']

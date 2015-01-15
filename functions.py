@@ -13,11 +13,6 @@ api_googlemaps = 'http://maps.googleapis.com/maps/api/geocode/json?address={}'
 ipinfo_api = 'http://api.ipinfodb.com/v3/ip-city/?key={}&ip={}&format=json'
 # http://api.ipinfodb.com/v3/ip-city/?key=<your_api_key>&ip=74.125.45.100&format=json
 
-
-
-       
-
-
 def verify_input(form):
     if form.submit_user.data and form.user_name.data == "":
         return 'You selected YOUR ACCOUNT but you did not include your user name. Please enter it.'
@@ -52,8 +47,8 @@ def weather_by_ip(request):
     if request.headers.getlist("X-Forwarded-For"):
        ip = request.headers.getlist("X-Forwarded-For")[0]
     else:
-       ip = request.remote_addr
-
+       ip = requests.get('http://icanhazip.com/').content
+    
     ip_data = requests.get(ipinfo_api.format(ipinfo_key, ip)).json()
     lat = ip_data['latitude']
     lng = ip_data['longitude']
@@ -62,9 +57,9 @@ def weather_by_ip(request):
     country = ip_data['countryName']
 
     flag = '0'
-    filler = '{}, {} {}'.format(city, region, country)
+    place = filler = '{}, {} {}'.format(city, region, country)
     place = filler
-    weather = get_weather_info(lat, lng), flag, filler, place
+    weather = (get_weather_info(lat, lng), flag, filler, place,)
     error = None
     return weather, error
 
@@ -82,7 +77,7 @@ def weather_by_zip(zipcode):
         
         flag = '1'
         filler = zipcode
-        weather = get_weather_info(lat, lng), flag, filler, place
+        weather = (get_weather_info(lat, lng), flag, filler, place,)
         error = None
     return weather, error
 
@@ -103,7 +98,7 @@ def weather_by_place(country, state, city):
 
         place = pretty_place(country, state, city)
         flag = '1'
-        weather = get_weather_info(lat, lng), flag, filler, place
+        weather = (get_weather_info(lat, lng), flag, filler, place,)
         error = None
     return weather, error
 
@@ -119,24 +114,29 @@ def weather_by_user(user_name):
         flag = '2'
         filler = school.school_name
         place = '{}, {} {}'.format(school.city, school.state, school.country)
-        weather = get_weather_info(lat, lng), flag, filler, place
+        weather = (get_weather_info(lat, lng), flag, filler, place, )
         error = None
     return weather, error
 
 def pretty_place(country, state, city):
+    #rewrite as if not
     city = city.title()
-    if state:
-        if country.lower() in ['us', 'usa', 'united states']:
-            country = "USA"
-            if len(state) == 2:
-                state = state.upper()
-            else:
-                state = state.title()
-            return '{}, {} {}'.format(city, state, country)
-        else:
-            return '{}, {} {}'.format(city, state, country.title())
+    country = country.title()
+    state = state.title()
+
+    if len(country) <4:
+        country = country.upper()
+
+    if country.lower() in ['us', 'usa', 'united states']:
+        country = "USA"
+
+    if len(state) == 2:
+        state = state.upper()
+
+    if state:        
+        return '{}, {} {}'.format(city, state, country)
     else:
-        return '{}, {}'.format(city, country.title())
+        return '{}, {}'.format(city, country)
     
 
     

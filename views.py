@@ -6,6 +6,7 @@ import pygeoip
 from forms import SearchForm, SchoolForm
 from models import SchoolData, SchoolWeather
 from config import app, db
+from mail_program import new_member_email
 
 from functions import get_weather, verify_input, get_weather_info, weather_by_user
 
@@ -17,7 +18,7 @@ from functions import get_weather, verify_input, get_weather_info, weather_by_us
 # db.text_factory = str
 
 
-@app.route('/weather', methods=['GET','POST'])
+@app.route('/', methods=['GET','POST'])
 def try_display_weather():
     form = SearchForm()
     if request.method == 'POST':
@@ -28,9 +29,8 @@ def try_display_weather():
                                                 # in the search form when it is rendered. is that javascript?
     return display_weather(form, request)
 
-@app.route('/weather/<user_name>', methods=['GET'])
+@app.route('/weather/<user_name>', methods=['GET', 'POST'])
 def display_specific_school(user_name):
-    print user_name
     weather, error = weather_by_user(user_name)
     (hourly, display_date), flag, filler, place  = weather
     return render_template("weather.html", hourly=hourly,
@@ -63,6 +63,8 @@ def school_info():
                             )
         db.session.add(school)
         db.session.commit()
+
+        new_member_email(form.email.data, form.user_name.data)
 
         # msg = Message("Welcome to weather watch",  
         #           sender="dee@deekras2.com",  
