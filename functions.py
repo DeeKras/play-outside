@@ -8,7 +8,7 @@ from config import  db
 
 ipinfo_key = '607dd31739e77a661a0152941384503e0d190bd9166a89ff2cd130cc4121ede4'
 
-geoip_data = pygeoip.GeoIP('/home/deekras/PythonEnv/My work/Playoutside/GeoLiteCity.dat')
+# geoip_data = pygeoip.GeoIP('/home/deekras/PythonEnv/My work/Playoutside/GeoLiteCity.dat')
 api_googlemaps = 'http://maps.googleapis.com/maps/api/geocode/json?address={}'
 ipinfo_api = 'http://api.ipinfodb.com/v3/ip-city/?key={}&format=json'.format(ipinfo_key)
 # http://api.ipinfodb.com/v3/ip-city/?key=<your_api_key>&ip=74.125.45.100&format=json
