@@ -3,8 +3,6 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from flask.ext.heroku import Heroku
-# from flaskext.mail import Mail  
-#TODO - use mailgun for emails
 
 from os import urandom, environ
 

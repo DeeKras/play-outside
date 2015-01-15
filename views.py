@@ -29,15 +29,22 @@ def try_display_weather():
                                                 # in the search form when it is rendered. is that javascript?
     return display_weather(form, request)
 
+
+
 @app.route('/weather/<user_name>', methods=['GET', 'POST'])
 def display_specific_school(user_name):
     weather, error = weather_by_user(user_name)
-    (hourly, display_date), flag, filler, place  = weather
-    return render_template("weather.html", hourly=hourly,
+    if error:
+        flash(error)
+        return redirect(url_for('search'))
+    else:
+        (hourly, display_date), flag, filler, place  = weather
+        return render_template("weather.html", hourly=hourly,
                                         display_date=display_date,
                                         filler=filler,
                                         place=place,
                                         flag=flag)
+
 
 @app.route('/search',  methods=['GET', 'POST'])   
 def search():
