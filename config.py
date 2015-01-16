@@ -15,6 +15,5 @@ heroku = Heroku()
 heroku.init_app(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('DATABASE_URL', 'sqlite:///SchoolWeather2.db')
 db = SQLAlchemy(app)
-# mail = Mail(app)
 
 

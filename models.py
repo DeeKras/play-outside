@@ -62,6 +62,7 @@ class SchoolData(db.Model):
         self.latitude = ''
         self.longitude = ''
 
+
         if country.lower() not in ['us', 'usa', 'united states'] and len(country) >4:
             self.country = country.title()
         elif country in ['us', 'usa', 'united states']:
@@ -95,6 +96,7 @@ class SchoolWeather(object):
         self.pretty_date = ""
 
         lookup_url = api_forecast_io.format(forecast_io_key, self.lat, self.lng, self.date)
+        print lookup_url
         self.json_response = requests.get(lookup_url).json()
 
         self.weather_data = self.json_response[u'hourly'][u'data']
@@ -107,6 +109,10 @@ class SchoolWeather(object):
     def find_hour(self, i):
         return self.weather_data[i][u'time']
 
+    def find_icon(self, i):
+        icon_type = self.weather_data[i][u'icon']
+        return "\static\weather_icons\{}.png".format(weather_icons_dict[icon_type])
+        
     def find_precip(self,i):
         if u'precipType' in self.weather_data[i]:
             precipType = self.weather_data[i][u'precipType']
@@ -137,7 +143,9 @@ class SchoolWeather(object):
         self.pretty_date =  '{}/{}/{}'.format(_dd[1], _dd[2], _dd[0])
 
     def pretty_hour(self,_time):
+        print _time
         _time_tup = convert_unixtime_time(_time).split(' ')
+        print _time_tup
         return '{} {}'.format(_time_tup[1], _time_tup[2])
 
     def pretty_temperatures(self,_tempF):
@@ -158,17 +166,16 @@ class SchoolWeather(object):
             playability = 'yellow'
         else:
             playability = 'red'
-
         return playability
 
-#---------------
+    #---------------
     def create_weatherdetails_dict(self):
         # this should create a dictionaty of the pretty data - to be passed to html. 
         #this can be in the views module
         self.set_pretty_date(self.date)
 
         gmt_offset = self.json_response[u'offset']
-        start_point = 9 + gmt_offset
+        start_point = 9 - gmt_offset
         end_point = start_point + 8
 
         hourly = []
@@ -177,7 +184,10 @@ class SchoolWeather(object):
             windchill = self.calculate_windchill(self.find_windspeed(i), self.find_temperature(i))
             
             hour = {
+                    'time' : self.weather_data[i][u'time'],
                     'hour': self.pretty_hour(self.find_hour(i)),
+                    'icon': self.weather_data[i][u'icon'],
+                    'icon_png': self.find_icon(i),
                     'temperature': self.pretty_temperatures(self.find_temperature(i)),
                     'windspeed': self.pretty_windspeed(self.find_windspeed(i)),
                     'precipType': self.find_precip(i)[0],
@@ -187,6 +197,7 @@ class SchoolWeather(object):
                     'playability': self.should_play_outside(windchill)
                     }
             hourly.append(hour)
+        print hourly
         return hourly
 
 
@@ -200,3 +211,18 @@ def convert_unixtime_time(unix_time):
 def convert_to_celsius(tempF):
     return round((int(tempF) -  32)*.55)
 
+
+weather_icons_dict = {
+            'clear-day': 'sunny',
+            'clear-night': 'sunny_night',
+            'rain': 'shower3',
+            'snow': 'snow4',
+            'sleet':'sleet' ,
+            'wind': 'wind', 
+            'fog': 'fog',
+            'cloudy':'cloudy5',
+            'partly-cloudy-day':'cloudy2',
+            'partly-cloudy-night':'cloudy2_night',
+            'hail':'hail', 
+            'thunderstorm':'tstorm3',
+            'tornado': 'tornado',}

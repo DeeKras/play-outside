@@ -5,9 +5,9 @@ body {
     width: 850px;
 }
 
-div {
+#headerbox {
     width: 800px;
-    font-family:Arial, sans-serif;
+    font-family: "Times New Roman", Georgia, Serif;
     color: blue;
     text-align: left;
     background-color: #CCFFFF;
@@ -34,3 +34,47 @@ div {
     border-radius: 1px;
 }
 
+#mainbox {
+    width: 800px;
+    height: 375px;
+    background-color: #CCFFFF;
+    border: 1px solid gray;
+    border-radius: 4px;
+    box-shadow: 4px 4px 5px #888888;
+    padding: 20px 25px;
+}
+
+.weather_header {
+    font-size: 120%;
+    font-weight: 700;
+}
+
+table.weather {
+    width: 100%;
+    text-align: center;
+    border: 1px solid gray;
+    font-family: "Times New Roman", Georgia, Serif;
+    font-size: 85%;
+    font-weight: 400;
+}
+table.weather th {
+    background-color: blue;
+    color: white;
+}
+th.columnborder {
+    border-right: 7px solid #CCFFFF;
+}
+
+table.weather td {
+    color: black;
+}
+td.columnborder {
+    border-right: 7px solid #CCFFFF;
+    background-color: white;
+}
+td.whitebox {
+    background-color: white
+}
+td.graybox {
+    background-color: black;
+}
