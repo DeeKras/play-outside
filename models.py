@@ -92,12 +92,12 @@ class SchoolWeather(object):
     def __init__(self, lat, lng):
         self.lat = lat
         self.lng = lng
-        self.date = '{}T12:00:00-0400'.format(datetime.date.today())
+        self.date = '{}T00:00:00-0400'.format(datetime.date.today())
         self.pretty_date = ""
 
         lookup_url = api_forecast_io.format(forecast_io_key, self.lat, self.lng, self.date)
-        print lookup_url
         self.json_response = requests.get(lookup_url).json()
+        self.offset = self.json_response[u'offset']
 
         self.weather_data = self.json_response[u'hourly'][u'data']
         self.hourly = self.create_weatherdetails_dict()
@@ -112,18 +112,19 @@ class SchoolWeather(object):
     def find_icon(self, i):
         icon_type = self.weather_data[i][u'icon']
         return "\static\weather_icons\{}.png".format(weather_icons_dict[icon_type])
-        
+
     def find_precip(self,i):
         if u'precipType' in self.weather_data[i]:
             precipType = self.weather_data[i][u'precipType']
-            precipProbability = '{}%'.format(self.weather_data[i][u'precipProbability'])
+            precipProbability = '{}  ---  {}%'.format(precipType, self.weather_data[i][u'precipProbability'])
             precipIntensity = self.weather_data[i][u'precipIntensity']
+            precip_icon = "\static\weather_icons\{}.png".format(precip_icons_dict[precipType])
         else:
-            precipType = 'N/A'
-            precipProbability = 'N/A'
-            precipIntensity = 'N/A'
+            precipProbability = 'no precip'
+            precipIntensity = '-'
+            precip_icon ="\static\weather_icons\dunno.png"
 
-        return precipType, precipProbability, precipIntensity
+        return precipProbability, precipIntensity, precip_icon
 
     def find_temperature(self,i):
         _tempF = self.weather_data[i][u'temperature']
@@ -142,10 +143,9 @@ class SchoolWeather(object):
         _dd = date.split('T')[0].split('-')
         self.pretty_date =  '{}/{}/{}'.format(_dd[1], _dd[2], _dd[0])
 
-    def pretty_hour(self,_time):
-        print _time
-        _time_tup = convert_unixtime_time(_time).split(' ')
-        print _time_tup
+    def pretty_hour(self,_time, offset):
+        print offset
+        _time_tup = convert_unixtime_time(_time, offset).split(' ')
         return '{} {}'.format(_time_tup[1], _time_tup[2])
 
     def pretty_temperatures(self,_tempF):
@@ -174,25 +174,24 @@ class SchoolWeather(object):
         #this can be in the views module
         self.set_pretty_date(self.date)
 
-        gmt_offset = self.json_response[u'offset']
-        start_point = 9 - gmt_offset
-        end_point = start_point + 8
+        
 
         hourly = []
 
-        for i in range(start_point, end_point):
+        for i in range(9, 17):
             windchill = self.calculate_windchill(self.find_windspeed(i), self.find_temperature(i))
             
             hour = {
                     'time' : self.weather_data[i][u'time'],
-                    'hour': self.pretty_hour(self.find_hour(i)),
+                    'hour': self.pretty_hour(self.find_hour(i),self.offset),
+                    'summary': self.weather_data[i][u'summary'],
                     'icon': self.weather_data[i][u'icon'],
                     'icon_png': self.find_icon(i),
                     'temperature': self.pretty_temperatures(self.find_temperature(i)),
                     'windspeed': self.pretty_windspeed(self.find_windspeed(i)),
-                    'precipType': self.find_precip(i)[0],
-                    'precipProbability': self.find_precip(i)[1],
-                    'precipIntensity': self.find_precip(i)[2],
+                    'precipProbability': self.find_precip(i)[0],
+                    'precipIntensity': self.find_precip(i)[1],
+                    'precip_icon':self.find_precip(i)[2],
                     'windchill': self.pretty_windchill(windchill),
                     'playability': self.should_play_outside(windchill)
                     }
@@ -205,8 +204,8 @@ class SchoolWeather(object):
 
 
 
-def convert_unixtime_time(unix_time):
-    return time.strftime("%D %I:%M %p", time.gmtime(int(unix_time)))
+def convert_unixtime_time(unix_time, offset):
+    return time.strftime("%D %I:%M %p", time.gmtime(int(unix_time + offset * 60 * 60)))
 
 def convert_to_celsius(tempF):
     return round((int(tempF) -  32)*.55)
@@ -226,3 +225,10 @@ weather_icons_dict = {
             'hail':'hail', 
             'thunderstorm':'tstorm3',
             'tornado': 'tornado',}
+
+precip_icons_dict = {
+            'snow': 'precip_snowflake',
+            'rain': 'precip_raindrop',
+            'sleet': 'precip_sleet',
+            'hail': 'precip_hail'
+}

@@ -11,8 +11,8 @@
 <br>
 <div id ="mainbox">
 	<mainbox class = "weather_header">
-	Weather for <font color = "red">{{place}} </font>for school hours on 
-	<font color = "red">{{display_date}}</font>: </mainbox>
+	Weather for <font color = "maroon">{{place}} </font>for school hours on 
+	<font color = "maroon">{{display_date}}</font>: </mainbox>
 
 
 		<table class = "weather">
@@ -23,22 +23,21 @@
 				<th>windspeed</th>
 				<th class = "columnborder">windchill</th>
 				<th>precip</th>
-				<th>precip probability</th>
-				<th class = "columnborder">precip intensity</th>
+				<th class = "columnborder">precip probability</th>
 				<th>playability</th>
 			</tr>
 			{% for hour in hourly %}
 	        <tr>
 				<td class="columnborder"><b>{{hour.hour}}</b>	</td>
-				<td class="graybox">
+				<td class="imgbox">
 					<img src={{hour.icon_png}} alt="yellow" height="25" width="25"></td>
 				<td class="whitebox">{{hour.temperature}}</td>
 				<td class="whitebox">{{hour.windspeed}}</td>
-				<td class = "columnborder"><b>{{hour.windchill}}</b></td>
-				<td class="whitebox">{{hour.precipType}}</td>
-				<td class="whitebox">{{hour.precipProbability}}</td>
-				<td class="columnborder">{{hour.precipIntensity}}</td>
-				<td class="graybox">
+				<td class="columnborder"><b>{{hour.windchill}}</b></td>
+				<td class="imgbox">
+					<img src={{hour.precip_icon}} alt="yellow" height="25" width="25"></td>
+				<td class="columnborder"> {{hour.precipProbability}}</td>
+				<td class="imgbox">
 				{%if hour.playability == 'red'%}
 	        	  <svg height="30" width="30">
   				  <circle cx="20" cy="20" r="10" stroke="white" stroke-width="1" fill="red" />
