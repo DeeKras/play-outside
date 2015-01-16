@@ -96,8 +96,10 @@ class SchoolWeather(object):
         self.pretty_date = ""
 
         lookup_url = api_forecast_io.format(forecast_io_key, self.lat, self.lng, self.date)
+        print lookup_url
         self.json_response = requests.get(lookup_url).json()
         self.offset = self.json_response[u'offset']
+        self.daily_summary = self.json_response[u'hourly'][u'summary']
 
         self.weather_data = self.json_response[u'hourly'][u'data']
         self.hourly = self.create_weatherdetails_dict()
@@ -116,13 +118,13 @@ class SchoolWeather(object):
     def find_precip(self,i):
         if u'precipType' in self.weather_data[i]:
             precipType = self.weather_data[i][u'precipType']
-            precipProbability = '{}  ---  {}%'.format(precipType, self.weather_data[i][u'precipProbability'])
+            precipProbability = '{}  ---  {}%'.format(precipType, self.weather_data[i][u'precipProbability']*100)
             precipIntensity = self.weather_data[i][u'precipIntensity']
             precip_icon = "\static\weather_icons\{}.png".format(precip_icons_dict[precipType])
         else:
             precipProbability = 'no precip'
             precipIntensity = '-'
-            precip_icon ="\static\weather_icons\dunno.png"
+            precip_icon ="\static\weather_icons\Norain.png"
 
         return precipProbability, precipIntensity, precip_icon
 
@@ -172,6 +174,7 @@ class SchoolWeather(object):
         # this should create a dictionaty of the pretty data - to be passed to html. 
         #this can be in the views module
         self.set_pretty_date(self.date)
+        self.daily_summary
 
         
 
@@ -195,7 +198,6 @@ class SchoolWeather(object):
                     'playability': self.should_play_outside(windchill)
                     }
             hourly.append(hour)
-        print hourly
         return hourly
 
 

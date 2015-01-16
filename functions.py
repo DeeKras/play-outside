@@ -41,7 +41,8 @@ def get_weather_info(lat, lng):
     weather_for_city = SchoolWeather(lat, lng)
     hourly = weather_for_city.hourly
     display_date = weather_for_city.pretty_date
-    return hourly, display_date
+    summary = weather_for_city.daily_summary
+    return hourly, display_date, summary
 
 def weather_by_ip(request):
     if request.headers.getlist("X-Forwarded-For"):
@@ -88,18 +89,24 @@ def weather_by_place(country, state, city):
         search_place = filler = '{},{}'.format(country, city)
     
     api = api_googlemaps.format(search_place)
+    # print api
     json_response = requests.get(api).json()
-    if json_response[u'status'] == u'ZERO_RESULTS':
-        weather = None
-        error = 'The data you entered in not accurate. Please reenter.'
-    else:
-        lat = json_response['results'][0]['geometry']['location']['lat']
-        lng = json_response['results'][0]['geometry']['location']['lng']
+    if json_response[u'status'] == 'OK':
+        if  json_response['results'][0]['address_components'][0]['types'][0] == "locality":
+            lat = json_response['results'][0]['geometry']['location']['lat']
+            lng = json_response['results'][0]['geometry']['location']['lng']
 
-        place = pretty_place(country, state, city)
-        flag = '1'
-        weather = (get_weather_info(lat, lng), flag, filler, place,)
-        error = None
+            place = pretty_place(country, state, city)
+            flag = '1'
+            weather = (get_weather_info(lat, lng), flag, filler, place,)
+            error = None
+        else:
+            weather = None
+            error = 'The data you entered in not accurate. Please reenter.'
+    # elif json_response[u'status'] == u'ZERO_RESULTS':
+    #     weather = None
+        # error = 'The data you entered in not accurate. Please reenter.'
+          
     return weather, error
 
 def weather_by_user(user_name):

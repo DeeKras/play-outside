@@ -38,8 +38,9 @@ def display_specific_school(user_name):
         flash(error)
         return redirect(url_for('search'))
     else:
-        (hourly, display_date), flag, filler, place  = weather
+        (hourly, display_date, summary), flag, filler, place  = weather
         return render_template("weather.html", hourly=hourly,
+                                        summary=summary,
                                         display_date=display_date,
                                         filler=filler,
                                         place=place,
@@ -79,8 +80,9 @@ def school_info():
         # mail.send(msg)
 
         place = '{}, {} {}'.format(school.city, school.state, school.country)
-        hourly, display_date = get_weather_info(school.latitude, school.longitude)
+        hourly, display_date, summary = get_weather_info(school.latitude, school.longitude)
         return render_template("weather.html", hourly=hourly,
+                                            summary=summary,
                                             display_date=display_date,
                                             filler=form.school_name.data,
                                             place=place,
@@ -97,8 +99,9 @@ def display_weather(form, request):
         return redirect(url_for('search'))  # need to figure out how to leave the inputed data in the 
                                             # in the search form when it is rendered. is that javascript?
     else:
-        (hourly, display_date), flag, filler, place  = weather
+        (hourly, display_date, summary), flag, filler, place  = weather
         return render_template("weather.html", hourly=hourly,
+                                        summary=summary,
                                         display_date=display_date,
                                         filler=filler,
                                         place=place,
