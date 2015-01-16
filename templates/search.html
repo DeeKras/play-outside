@@ -1,56 +1,52 @@
-<!doctype html>
-
-
+<!DOCTYPE html>
+<html>
 <head>
-	<h1>
-		WEATHER WATCH!
-	</h1>
+    <meta charset="utf-8">
+    <title>Weather Watch</title>
+    <link rel="stylesheet" type="text/css" href="/static/styles.css" media="screen" />
 </head>
+<h1>WEATHER WATCH! for schools</h1>
+
+Search for weather for your school!
 <body>
 	<form name = 'searchby', method = 'post', action ="/">
-		<table>
-		  <col width="150" height="20">
-		  <col width="600">
+		<table class="Table_SearchForm">
+<!-- 		  <col width="150" height="70">
+		  <col width="600" height="70"> -->
 			<tr>
 				<td>
 					Zip Code (US only):
 				<td>
-					{{form.zipcode(placeholder='zip code')}}
+					{{form.zipcode(style="width: 300px; height: 20px;", placeholder='zip code')}}
 				</td>
 				<td>
-					{{form.submit_zip}}
+					<div>{{form.submit_zip(style="width: 200px;",class="Search_Button")}}</div>
 				</td>
 			</tr>
-			<tr>
-				<td>
-				</td>
-			</tr>
+<br><br>
 			<tr>
 				<td>
 					Place:
 				</td>
 				<td>
-					{{form.country(placeholder='country')}} 
-					{{form.state(placeholder='region/ state')}}
-					{{form.city(placeholder='city')}}
+					{{form.country(style="width: 300px; height: 20px;" ,placeholder='country')}} <br><br>
+					{{form.state(style="width: 300px; height: 20px;",placeholder='region/ state')}}<br><br>
+					{{form.city(style="width: 300px; height: 20px;",placeholder='city')}}
 				</td>
 				<td>
-					{{form.submit_place}}			
+					<div>{{form.submit_place(style="width: 200px;",class="Search_Button")}}</div>
 				</td>
 			</tr>
-			<tr>
-				<td>
-				</td>
-			</tr>
+<br><br>
 			<tr>
 				<td>
 					Your Account:
 				</td>
 				<td>
-					{{form.user_name(placeholder='user name')}} 
+					{{form.user_name(style="width: 300px; height: 20px;", placeholder='user name')}} 
 				</td>
 				<td>
-					{{form.submit_user}}
+					<div>{{form.submit_user(style="width: 200px;",class="Search_Button")}}</div>
 				</td>
 			</tr>
 		</table>

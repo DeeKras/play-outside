@@ -19,6 +19,7 @@
 			<tr>
 				<th class = "columnborder">time</th>
 				<th> icon</th>
+				<th class = "columnborder">summary</th>
 				<th>temperature</th>
 				<th>windspeed</th>
 				<th class = "columnborder">windchill</th>
@@ -31,6 +32,7 @@
 				<td class="columnborder"><b>{{hour.hour}}</b>	</td>
 				<td class="imgbox">
 					<img src={{hour.icon_png}} alt="yellow" height="25" width="25"></td>
+				<td class="columnborder">{{hour.summary}}</td>
 				<td class="whitebox">{{hour.temperature}}</td>
 				<td class="whitebox">{{hour.windspeed}}</td>
 				<td class="columnborder"><b>{{hour.windchill}}</b></td>

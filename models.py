@@ -144,7 +144,6 @@ class SchoolWeather(object):
         self.pretty_date =  '{}/{}/{}'.format(_dd[1], _dd[2], _dd[0])
 
     def pretty_hour(self,_time, offset):
-        print offset
         _time_tup = convert_unixtime_time(_time, offset).split(' ')
         return '{} {}'.format(_time_tup[1], _time_tup[2])
 

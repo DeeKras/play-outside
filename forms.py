@@ -28,3 +28,4 @@ class SchoolForm(Form):
     cellphone = StringField(label='Cell Phone', validators=[DataRequired()])
     send_email = BooleanField(label='Send me email every morning', default=True)
     send_text = BooleanField(label='Send me text every morning', default=True)
+    submit_school = SubmitField('Register my school')
