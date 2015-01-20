@@ -89,10 +89,10 @@ class SchoolData(db.Model):
 
         
 class SchoolWeather(object):
-    def __init__(self, lat, lng):
+    def __init__(self, lat, lng, days):
         self.lat = lat
         self.lng = lng
-        self.date = '{}T00:00:00-0400'.format(datetime.date.today())
+        self.date = '{}T00:00:00-0400'.format(datetime.date.today() + datetime.timedelta(days=days))
         self.pretty_date = ""
 
         lookup_url = api_forecast_io.format(forecast_io_key, self.lat, self.lng, self.date)

@@ -6,53 +6,46 @@ import pygeoip
 from forms import SearchForm, SchoolForm
 from models import SchoolData, SchoolWeather
 from config import app, db
-from mail_program import new_member_email
+from send_emails import send_new_member_email
 
-from functions import get_weather, verify_input, get_weather_info, weather_by_user
-
-
-# geoip_data = pygeoip.GeoIP('/home/deekras/PythonEnv/My work/Playoutside/GeoLiteCity.dat')
+from functions import  verify_input, get_detailed_weather_info, get_weather_by_user, \
+                        get_weather_by_ip, get_weather_by_place, get_weather_by_zip
 
 
+@app.route('/', methods=['GET'])
+def by_ip():
+    weather, error = get_weather_by_ip(request)
+    return display_weather(weather, error)
 
 
-
-@app.route('/', methods=['GET','POST'])
-def try_display_weather():
+@app.route('/', methods=['POST'])
+def by_search():
     form = SearchForm()
-    if request.method == 'POST':
-        error = verify_input(form)
-        if error:
-            flash(error)
-            return redirect(url_for('search'))  # need to figure out how to leave the inputed data in the 
-                                                # in the search form when it is rendered. is that javascript?
-    return display_weather(form, request)
+    error = verify_input(form)
+    if error:
+        flash(error)
+        return redirect(url_for('search'))  # TODO: need to figure out how to leave the inputed data in the 
+    
+                                                #       in the search form when it is rendered. is that javascript?
+    if form.submit_zip.data:
+        weather, error = get_weather_by_zip(form.zipcode.data)
+    elif form.submit_place.data:
+        weather, error = get_weather_by_place(form.country.data, form.state.data, form.city.data)
+    elif form.submit_user.data:                                            
+        weather, error = get_weather_by_user(form.user_name.data)
 
+
+    return display_weather(weather, error)
 
 
 @app.route('/weather/<user_name>', methods=['GET', 'POST'])
-def display_specific_school(user_name):
-    weather, error = weather_by_user(user_name)
-    if error:
-        flash(error)
-        return redirect(url_for('search'))
-    else:
-        (hourly, display_date, summary), flag, filler, place  = weather
-        return render_template("weather.html", hourly=hourly,
-                                        summary=summary,
-                                        display_date=display_date,
-                                        filler=filler,
-                                        place=place,
-                                        flag=flag)
-
-
-@app.route('/search',  methods=['GET', 'POST'])   
-def search():
-    return render_template('search.html', form=SearchForm())
+def specific_school(user_name):
+    weather, error = get_weather_by_user(user_name)
+    return display_weather(weather, error)
 
 
 @app.route('/school_info', methods=['GET', 'POST'])
-def school_info():
+def add_new_school():
     if request.method =='POST':
         form = SchoolForm()
         school = SchoolData(form.user_name.data,
@@ -71,37 +64,30 @@ def school_info():
         db.session.add(school)
         db.session.commit()
 
-        new_member_email(form.email.data, form.user_name.data)
+        send_new_member_email(form.email.data, form.user_name.data)
 
-        # msg = Message("Welcome to weather watch",  
-        #           sender="dee@deekras2.com",  
-        #           recipients=[SchoolData(school.email)])
-        # mail.send(msg)
-
-        place = '{}, {} {}'.format(school.city, school.state, school.country)
-        hourly, display_date, summary = get_weather_info(school.latitude, school.longitude)
-        return render_template("weather.html", hourly=hourly,
-                                            summary=summary,
-                                            display_date=display_date,
-                                            filler=form.school_name.data,
-                                            place=place,
-                                            flag='2')    
+        weather, error = get_weather_by_user(form.user_name.data)
+        return display_weather(weather, error)
 
     if request.method == 'GET':
         return render_template('schoolform.html', form=SchoolForm())
 
 
-def display_weather(form, request):
-    weather, error = get_weather(form, request)
+def display_weather(weather, error):
     if error:
         flash(error)
         return redirect(url_for('search'))  # need to figure out how to leave the inputed data in the 
                                             # in the search form when it is rendered. is that javascript?
     else:
-        (hourly, display_date, summary), flag, filler, place  = weather
+        (hourly, display_date, summary), html_flag, html_filler, html_place  = weather
         return render_template("weather.html", hourly=hourly,
                                         summary=summary,
                                         display_date=display_date,
-                                        filler=filler,
-                                        place=place,
-                                        flag=flag)
+                                        html_filler=html_filler,
+                                        html_place=html_place,
+                                        html_flag=html_flag)
+
+
+@app.route('/search',  methods=['GET', 'POST'])   
+def search():
+    return render_template('search.html', form=SearchForm())

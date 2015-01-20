@@ -13,12 +13,12 @@
     	<table>
         <tr>
             <td>
-                {%if flag == '0'%}
-        		  We detected your location <br><span class="filler">{{filler}}</span>
-        	    {% elif flag =='1' %}
-                  Results for your search for <br><span class="filler">{{filler}}</span>
-                {% elif flag == '2' %}
-                  Welcome <span class="filler">{{filler}}</span>
+                {%if html_flag == '0'%}
+        		  We detected your location <br><span class="filler">{{html_filler}}</span>
+        	    {% elif html_flag =='1' %}
+                  Results for your search for <br><span class="filler">{{html_filler}}</span>
+                {% elif html_flag == '2' %}
+                  Welcome <span class="filler">{{html_filler}}</span>
         	    {%endif%}
             </td>
             <td>
