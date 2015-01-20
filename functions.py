@@ -7,11 +7,8 @@ from models import SchoolData, SchoolWeather
 from config import  db
 
 ipinfo_key = '607dd31739e77a661a0152941384503e0d190bd9166a89ff2cd130cc4121ede4'
-
-# geoip_data = pygeoip.GeoIP('/home/deekras/PythonEnv/My work/Playoutside/GeoLiteCity.dat')
 api_googlemaps = 'http://maps.googleapis.com/maps/api/geocode/json?address={}'
 ipinfo_api = 'http://api.ipinfodb.com/v3/ip-city/?key={}&ip={}&format=json'
-# http://api.ipinfodb.com/v3/ip-city/?key=<your_api_key>&ip=74.125.45.100&format=json
 
 def verify_input(form):
     if form.submit_user.data and form.user_name.data == "":
@@ -89,7 +86,6 @@ def weather_by_place(country, state, city):
         search_place = filler = '{},{}'.format(country, city)
     
     api = api_googlemaps.format(search_place)
-    # print api
     json_response = requests.get(api).json()
     if json_response[u'status'] == 'OK':
         if  json_response['results'][0]['address_components'][0]['types'][0] == "locality":
@@ -103,10 +99,6 @@ def weather_by_place(country, state, city):
         else:
             weather = None
             error = 'The data you entered in not accurate. Please reenter.'
-    # elif json_response[u'status'] == u'ZERO_RESULTS':
-    #     weather = None
-        # error = 'The data you entered in not accurate. Please reenter.'
-          
     return weather, error
 
 def weather_by_user(user_name):

@@ -14,8 +14,7 @@ from functions import get_weather, verify_input, get_weather_info, weather_by_us
 # geoip_data = pygeoip.GeoIP('/home/deekras/PythonEnv/My work/Playoutside/GeoLiteCity.dat')
 
 
-# db.create_all()
-# db.text_factory = str
+
 
 
 @app.route('/', methods=['GET','POST'])
