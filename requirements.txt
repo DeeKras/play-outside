@@ -13,7 +13,7 @@ Pygments==2.0.1
 SQLAlchemy==0.9.8
 Unidecode==0.04.16
 WTForms==2.0.1
-Werkzeug==0.9.6
+Werkzeug==0.15.3
 argparse==1.2.1
 arrow==0.4.4
 astral==0.7.4
