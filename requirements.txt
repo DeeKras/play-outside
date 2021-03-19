@@ -6,7 +6,7 @@ Flask-Script==2.0.5
 Flask-Testing==0.4.2
 Flask-WTF==0.10.3
 IP2Location
-Jinja2==2.7.3
+Jinja2==2.11.3
 Markdown==2.5.2
 MarkupSafe==0.23
 Pygments==2.0.1
