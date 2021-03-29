@@ -9,7 +9,7 @@ IP2Location
 Jinja2==2.7.3
 Markdown==2.5.2
 MarkupSafe==0.23
-Pygments==2.0.1
+Pygments==2.7.4
 SQLAlchemy==0.9.8
 Unidecode==0.04.16
 WTForms==2.0.1
