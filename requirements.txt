@@ -63,7 +63,7 @@ six==1.8.0
 smartypants==1.8.6
 twilio==3.6.9
 typogrify==2.0.7
-urllib3==1.9.1
+urllib3==1.26.5
 virtualenv==12.0.5
 wifi==0.3.4
 wmctrl==0.1
